@@ -18,7 +18,7 @@ open class PKHUD: NSObject {
 
     public var viewToPresentOn: UIView?
 
-    fileprivate let container = ContainerView()
+    let container = ContainerView()
     fileprivate var hideTimer: Timer?
 
     public typealias TimerAction = (Bool) -> Void
@@ -117,10 +117,30 @@ open class PKHUD: NSObject {
             container.frameView.effect = newValue
         }
     }
-    
     open var leadingMargin: CGFloat = 0
-    
     open var trailingMargin: CGFloat = 0
+    open func show(center view: UIView? = nil) {
+        let view: UIView = view ?? viewToPresentOn ?? UIApplication.shared.keyWindow!
+        if  !view.subviews.contains(container) {
+            view.addSubview(container)
+            container.frame.origin = CGPoint.zero
+            container.frame.size = view.frame.size
+            container.center = CGPoint.init(x: view.center.x, y: view.frame.maxY - 240)
+            container.autoresizingMask = [ .flexibleWidth ]
+            container.isHidden = true
+        }
+        if dimsBackground {
+            container.showBackground(animated: true)
+        }
+        // If the grace time is set, postpone the HUD display
+        if gracePeriod > 0.0 {
+            let timer = Timer(timeInterval: gracePeriod, target: self, selector: #selector(PKHUD.handleGraceTimer(_:)), userInfo: nil, repeats: false)
+            RunLoop.current.add(timer, forMode: .commonModes)
+            graceTimer = timer
+        } else {
+            showContent()
+        }
+    }
 
     open func show(onView view: UIView? = nil) {
         let view: UIView = view ?? viewToPresentOn ?? UIApplication.shared.keyWindow!

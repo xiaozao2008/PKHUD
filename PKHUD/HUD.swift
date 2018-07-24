@@ -57,6 +57,11 @@ public final class HUD {
         PKHUD.sharedHUD.contentView = contentView(content)
         PKHUD.sharedHUD.show(onView: view)
     }
+    
+    public static func show(bottom content: HUDContentType, onView view: UIView? = nil) {
+        PKHUD.sharedHUD.contentView = contentView(content)
+        PKHUD.sharedHUD.show(center: view)
+    }
 
     public static func hide(_ completion: ((Bool) -> Void)? = nil) {
         PKHUD.sharedHUD.hide(animated: false, completion: completion)
@@ -78,6 +83,11 @@ public final class HUD {
 
     public static func flash(_ content: HUDContentType, onView view: UIView? = nil, delay: TimeInterval, completion: ((Bool) -> Void)? = nil) {
         HUD.show(content, onView: view)
+        HUD.hide(afterDelay: delay, completion: completion)
+    }
+    
+    public static func flash(bottom content: HUDContentType, onView view: UIView? = nil, delay: TimeInterval, completion: ((Bool) -> Void)? = nil) {
+        HUD.show(bottom: content, onView: view)
         HUD.hide(afterDelay: delay, completion: completion)
     }
 
